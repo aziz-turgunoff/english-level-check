@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>English Level Check</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: one narrow exam-booklet column, one question per screen, thumb-sized answers, CEFR ruler on the result. */
+:root{
+  --bg:#f3f5fa; --card:#ffffff; --fg:#141b2d; --muted:#5b6478; --line:#d6dbe8;
+  --accent:#2447d6; --accent-ink:#ffffff; --accent-soft:#e4e9fc;
+  --good:#12784a; --good-soft:#dff3e8; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1220; --card:#171d30; --fg:#eaeefb; --muted:#9aa4bd; --line:#2b3350;
+    --accent:#7d97ff; --accent-ink:#0b1022; --accent-soft:#222c52;
+    --good:#5fd39a; --good-soft:#143524; --bad:#ff8f86; --bad-soft:#40201e;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1220; --card:#171d30; --fg:#eaeefb; --muted:#9aa4bd; --line:#2b3350;
+  --accent:#7d97ff; --accent-ink:#0b1022; --accent-soft:#222c52;
+  --good:#5fd39a; --good-soft:#143524; --bad:#ff8f86; --bad-soft:#40201e;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:560px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.brand{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.count{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s ease}
+h1{font-family:var(--display);font-size:30px;line-height:1.12;letter-spacing:-.02em;margin:8px 0 0;text-wrap:balance}
+h2{font-family:var(--display);font-size:20px;line-height:1.25;margin:0;text-wrap:balance}
+p{margin:0}
+.lead{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.facts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.facts li{display:flex;gap:12px;align-items:baseline}
+.facts b{font-family:var(--display);min-width:64px;font-size:15px}
+.tag{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.qtext{font-size:19px;line-height:1.4;font-weight:500}
+.passage{font-size:15px;line-height:1.55;color:var(--fg);background:var(--accent-soft);border-radius:12px;padding:14px 16px;max-height:38vh;overflow:auto}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{font:inherit;color:var(--fg);text-align:left;width:100%;min-height:54px;padding:13px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;display:flex;gap:12px;align-items:center}
+.opt .k{font-family:var(--display);font-weight:600;color:var(--muted);min-width:18px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"] .k{color:var(--accent)}
+.opt:focus-visible,.btn:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.nav{display:flex;gap:10px}
+.btn{font:inherit;font-weight:600;min-height:52px;padding:12px 18px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;flex:1}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{flex:0 0 auto;min-width:96px}
+label{font-weight:600;font-size:14px}
+input[type=text],textarea{font:inherit;color:var(--fg);background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;width:100%}
+textarea{min-height:190px;resize:vertical;line-height:1.5}
+.hint{font-size:14px;color:var(--muted)}
+.score{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.score .n{font-family:var(--display);font-weight:700;font-size:54px;line-height:1;font-variant-numeric:tabular-nums}
+.score .of{color:var(--muted);font-size:18px}
+.ruler{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.ruler div{border-radius:8px;padding:9px 4px 8px;text-align:center;background:var(--card);border:1.5px solid var(--line);min-width:0}
+.ruler b{display:block;font-family:var(--display);font-size:16px}
+.ruler span{display:block;font-size:11px;color:var(--muted);line-height:1.2;overflow-wrap:anywhere}
+.ruler .on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.ruler .on span{color:var(--accent-ink)}
+.rows{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:104px 1fr 52px;gap:10px;align-items:center;font-size:14px}
+.row .t{font-weight:600}
+.row .m{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.row .m i{display:block;height:100%;background:var(--accent)}
+.row .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.miss{display:flex;flex-direction:column;gap:12px;list-style:none;margin:0;padding:0}
+.miss li{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+.miss li:first-child{border-top:0;padding-top:0}
+.miss .meta{font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.yours{color:var(--bad)} .right{color:var(--good);font-weight:600}
+.out{font-family:ui-monospace,Consolas,monospace;font-size:13px;min-height:150px}
+.ok{color:var(--good);font-weight:600;font-size:14px}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}}
+</style>
+
+<main class="wrap">
+  <div class="top"><span class="brand">English Level Check</span><span class="count" id="count"></span></div>
+  <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+
+  <section id="scr-start" class="stack">
+    <span class="tag">Placement test · A2 to B2</span>
+    <h1>Let's find your English level</h1>
+    <p class="lead">Answer honestly and don't use a dictionary or a translator. If you don't know an answer, choose your best guess and move on.</p>
+    <div class="card">
+      <ul class="facts">
+        <li><b>40</b><span>questions: grammar, vocabulary and one short text</span></li>
+        <li><b>1</b><span>short writing task at the end, 60–80 words</span></li>
+        <li><b>20 min</b><span>is enough. Your answers are saved on this phone if you close the page</span></li>
+      </ul>
+    </div>
+    <div class="stack" style="gap:6px">
+      <label for="name">Your name</label>
+      <input type="text" id="name" autocomplete="given-name" placeholder="Your name">
+    </div>
+    <p class="hint">Тест на уровень английского. В конце нажми «Copy my result» и отправь результат Азизу.</p>
+    <div class="nav"><button class="btn primary" id="go" type="button">Start the test</button></div>
+  </section>
+
+  <section id="scr-q" class="stack" hidden>
+    <span class="tag" id="q-tag"></span>
+    <div class="passage" id="q-pass" hidden></div>
+    <p class="qtext" id="q-text"></p>
+    <div class="opts" id="q-opts"></div>
+    <div class="nav">
+      <button class="btn small" id="back" type="button">Back</button>
+      <button class="btn primary" id="next" type="button">Next</button>
+    </div>
+  </section>
+
+  <section id="scr-write" class="stack" hidden>
+    <span class="tag">Writing</span>
+    <h2 id="w-task"></h2>
+    <textarea id="writing" placeholder="Start writing here…"></textarea>
+    <p class="hint"><span id="w-count">0</span> words. Aziz reads this part himself, so it is not scored here.</p>
+    <div class="nav">
+      <button class="btn small" id="w-back" type="button">Back</button>
+      <button class="btn primary" id="finish" type="button">Finish and see my level</button>
+    </div>
+  </section>
+
+  <section id="scr-result" class="stack" hidden>
+    <span class="tag">Your result</span>
+    <div class="score"><span class="n" id="r-n"></span><span class="of" id="r-of"></span></div>
+    <h2 id="r-level"></h2>
+    <div class="ruler" id="r-ruler"></div>
+    <p class="lead" id="r-note"></p>
+    <div class="card stack">
+      <h2>By level</h2>
+      <div class="rows" id="r-levels"></div>
+      <h2>By skill</h2>
+      <div class="rows" id="r-skills"></div>
+    </div>
+    <div class="card stack">
+      <h2>Send your result to Aziz</h2>
+      <p class="hint">Tap the button, then paste the text into Telegram.</p>
+      <div class="nav"><button class="btn primary" id="copy" type="button">Copy my result</button></div>
+      <p class="ok" id="copied" hidden>Copied. Paste it into the chat with Aziz.</p>
+      <textarea class="out" id="out" readonly hidden></textarea>
+    </div>
+    <div class="card stack">
+      <h2 id="m-title">Questions to review</h2>
+      <ul class="miss" id="r-miss"></ul>
+    </div>
+    <p class="hint">This is an estimate from 40 questions, not an official exam result.</p>
+    <div class="nav"><button class="btn" id="again" type="button">Take the test again</button></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var DATA = {"title": "English Level Check", "student": "", "passage": "Last year Madina moved from Samarkand to Berlin to study design. At first, everything was difficult. She could read German quite well, but she found it hard to follow people when they spoke quickly. She also missed her family and the food from home. After a few weeks she joined a cooking club at the university. There she met students from many countries, and they taught each other dishes from home. Her plov became so popular that the club asked her to cook it at the spring festival. Madina says the club did more for her German than any language class, because she had to speak, make mistakes and laugh about them. She still calls her mother every Sunday, but she no longer counts the days until the holidays.", "writing": "Write 60–80 words. Describe your typical week, and say one thing you would like to change about it.", "questions": [{"s": "Grammar", "l": "A2", "t": "Present simple", "q": "She _____ to work by bus every day.", "o": ["go", "goes", "going", "is go"], "a": 1}, {"s": "Grammar", "l": "A2", "t": "There is / there are", "q": "There _____ any milk in the fridge.", "o": ["aren't", "not", "isn't", "don't"], "a": 2}, {"s": "Grammar", "l": "A2", "t": "Past simple", "q": "We _____ to the cinema last Saturday.", "o": ["went", "go", "have gone", "going"], "a": 0}, {"s": "Grammar", "l": "A2", "t": "Comparatives", "q": "My brother is _____ than me.", "o": ["tall", "more tall", "tallest", "taller"], "a": 3}, {"s": "Grammar", "l": "A2", "t": "Present continuous", "q": "Look! It _____ outside.", "o": ["snows", "is snowing", "snow", "snowed"], "a": 1}, {"s": "Grammar", "l": "A2", "t": "Much / many", "q": "How _____ sugar do you take in your tea?", "o": ["many", "few", "much", "lot"], "a": 2}, {"s": "Grammar", "l": "A2", "t": "Will for decisions", "q": "I'm tired. I think I _____ go to bed early tonight.", "o": ["will", "am", "going", "do"], "a": 0}, {"s": "Grammar", "l": "A2", "t": "Must / mustn't", "q": "You _____ smoke here. This is a hospital.", "o": ["don't have to", "haven't", "aren't", "mustn't"], "a": 3}, {"s": "Grammar", "l": "B1", "t": "Present perfect with since", "q": "I _____ in Tashkent since 2019.", "o": ["live", "have lived", "lived", "am living"], "a": 1}, {"s": "Grammar", "l": "B1", "t": "Past continuous", "q": "While I _____ TV, the phone rang.", "o": ["watched", "am watching", "was watching", "have watched"], "a": 2}, {"s": "Grammar", "l": "B1", "t": "First conditional", "q": "If it _____ tomorrow, we'll stay at home.", "o": ["rains", "will rain", "rained", "would rain"], "a": 0}, {"s": "Grammar", "l": "B1", "t": "Passive voice", "q": "This bridge _____ in 1905.", "o": ["built", "has built", "is building", "was built"], "a": 3}, {"s": "Grammar", "l": "B1", "t": "Preposition + -ing", "q": "I'm looking forward _____ you on Saturday.", "o": ["to see", "to seeing", "seeing", "see"], "a": 1}, {"s": "Grammar", "l": "B1", "t": "Reported questions", "q": "She asked me where _____.", "o": ["did I live", "do I live", "I lived", "I am live"], "a": 2}, {"s": "Grammar", "l": "B1", "t": "Don't have to", "q": "Tomorrow is a holiday, so I _____ get up early.", "o": ["don't have to", "mustn't", "haven't to", "am not"], "a": 0}, {"s": "Grammar", "l": "B1", "t": "Relative clauses", "q": "He's the man _____ car was stolen.", "o": ["who", "which", "that", "whose"], "a": 3}, {"s": "Grammar", "l": "B1", "t": "Used to", "q": "I _____ smoke, but I stopped two years ago.", "o": ["use to", "used to", "was used to", "am used"], "a": 1}, {"s": "Grammar", "l": "B1", "t": "Yet / already", "q": "Have you finished your homework _____?", "o": ["already", "still", "yet", "just"], "a": 2}, {"s": "Grammar", "l": "B2", "t": "Third conditional", "q": "If I _____ about the meeting, I would have come.", "o": ["had known", "knew", "have known", "would know"], "a": 0}, {"s": "Grammar", "l": "B2", "t": "Wish + past", "q": "I wish I _____ more time to travel.", "o": ["have", "would have", "will have", "had"], "a": 3}, {"s": "Grammar", "l": "B2", "t": "Past perfect", "q": "By the time we arrived, the film _____.", "o": ["already started", "had already started", "has already started", "was already starting"], "a": 1}, {"s": "Grammar", "l": "B2", "t": "Verb + -ing", "q": "She suggested _____ a taxi.", "o": ["to take", "take us", "taking", "that taking"], "a": 2}, {"s": "Grammar", "l": "B2", "t": "Inversion", "q": "Hardly _____ the house when it started to rain.", "o": ["had I left", "I had left", "I left", "did I left"], "a": 0}, {"s": "Grammar", "l": "B2", "t": "Have something done", "q": "I'm getting my car _____ tomorrow.", "o": ["repair", "to repair", "repairing", "repaired"], "a": 3}, {"s": "Vocabulary", "l": "A2", "t": "Everyday verbs", "q": "I need to _____ some money from the cash machine.", "o": ["give up", "take out", "put on", "turn off"], "a": 1}, {"s": "Vocabulary", "l": "A2", "t": "Opposites", "q": "The opposite of \"expensive\" is _____.", "o": ["rich", "poor", "cheap", "free"], "a": 2}, {"s": "Vocabulary", "l": "A2", "t": "Say / tell", "q": "Can you _____ me the way to the station?", "o": ["tell", "say", "speak", "talk"], "a": 0}, {"s": "Vocabulary", "l": "B1", "t": "Phrasal verbs", "q": "She _____ up smoking last year.", "o": ["took", "made", "put", "gave"], "a": 3}, {"s": "Vocabulary", "l": "B1", "t": "Money words", "q": "I can't _____ to buy a new phone this month.", "o": ["allow", "afford", "spend", "cost"], "a": 1}, {"s": "Vocabulary", "l": "B1", "t": "Work and plans", "q": "The meeting has been _____ until next Monday.", "o": ["cancelled out", "delayed off", "postponed", "put"], "a": 2}, {"s": "Vocabulary", "l": "B1", "t": "Character adjectives", "q": "He's very _____. You can always count on him.", "o": ["reliable", "jealous", "shy", "lazy"], "a": 0}, {"s": "Vocabulary", "l": "B2", "t": "Collocations", "q": "The new law will come into _____ next year.", "o": ["result", "place", "sense", "effect"], "a": 3}, {"s": "Vocabulary", "l": "B2", "t": "Collocations", "q": "She has a _____ knowledge of Russian literature.", "o": ["tall", "thorough", "heavy", "loud"], "a": 1}, {"s": "Vocabulary", "l": "B2", "t": "Adverbs of degree", "q": "Prices have risen _____ over the last year.", "o": ["hardly", "lately", "significantly", "nearly"], "a": 2}, {"s": "Reading", "l": "B1", "t": "Finding facts", "q": "Why did Madina go to Berlin?", "o": ["To study design", "To learn to cook", "To work in a club", "To visit her family"], "a": 0}, {"s": "Reading", "l": "B1", "t": "Finding facts", "q": "What was hard for her at the beginning?", "o": ["Reading German texts", "Finding the university", "Cooking German food", "Understanding fast speech"], "a": 3}, {"s": "Reading", "l": "B1", "t": "Finding facts", "q": "What happened at the cooking club?", "o": ["She learned only German recipes", "Students shared dishes from their countries", "She taught a language class", "She worked there for money"], "a": 1}, {"s": "Reading", "l": "B1", "t": "Cause and result", "q": "Why was she asked to cook at the spring festival?", "o": ["She was the best student", "Nobody else could cook", "Her plov was very popular", "It was part of her course"], "a": 2}, {"s": "Reading", "l": "B2", "t": "Understanding reasons", "q": "According to Madina, why did the club help her German so much?", "o": ["She had to speak and stopped fearing mistakes", "It gave her a certificate", "She read recipes in German", "The lessons there were free"], "a": 0}, {"s": "Reading", "l": "B2", "t": "Reading between the lines", "q": "\"She no longer counts the days until the holidays\" suggests that she _____.", "o": ["has stopped visiting her family", "has no holidays this year", "is too busy to call home", "feels at home in Berlin now"], "a": 3}]};
+  var Q = DATA.questions, N = Q.length, KEY = 'elc-v1';
+  var LEVELS = ['A2','B1','B2'], SKILLS = ['Grammar','Vocabulary','Reading'];
+  var BANDS = [
+    {code:'A1–A2', name:'Elementary'},
+    {code:'A2+',   name:'Pre-Intermediate'},
+    {code:'B1',    name:'Intermediate'},
+    {code:'B2',    name:'Upper-Intermediate'}
+  ];
+  var NOTES = [
+    'The basics still need work. We start from everyday grammar and build up to Intermediate step by step.',
+    'The basics are in place. The Intermediate (B1) topics are the next step, and that is exactly our goal.',
+    'You are already at Intermediate. We will make it solid and start on Upper-Intermediate topics.',
+    'You are above Intermediate. We can work on fluency, harder texts and speaking.'
+  ];
+  var st = {i:-1, ans:new Array(N).fill(null), name:'', writing:'', done:false};
+
+  function $(id){ return document.getElementById(id); }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+  function load(){
+    try{
+      var s = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if(s && s.ans && s.ans.length === N){ st = s; }
+    }catch(e){}
+  }
+  function show(id){
+    ['scr-start','scr-q','scr-write','scr-result'].forEach(function(x){ $(x).hidden = (x !== id); });
+    window.scrollTo(0,0);
+  }
+  function progress(done, label){
+    $('bar').style.width = Math.round(done / (N + 1) * 100) + '%';
+    $('count').textContent = label;
+  }
+
+  function renderQ(){
+    var q = Q[st.i];
+    show('scr-q');
+    progress(st.i, (st.i + 1) + ' / ' + N);
+    $('q-tag').textContent = q.s;
+    var pass = $('q-pass');
+    if(q.s === 'Reading'){ pass.textContent = DATA.passage; pass.hidden = false; } else { pass.hidden = true; }
+    $('q-text').textContent = q.q;
+    var box = $('q-opts'); box.textContent = '';
+    q.o.forEach(function(text, k){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'opt'; b.id = 'opt-' + k;
+      b.setAttribute('aria-pressed', st.ans[st.i] === k ? 'true' : 'false');
+      var key = document.createElement('span'); key.className = 'k'; key.textContent = 'ABCD'[k];
+      var lab = document.createElement('span'); lab.textContent = text;
+      b.appendChild(key); b.appendChild(lab);
+      b.addEventListener('click', function(){ st.ans[st.i] = k; save(); renderQ(); });
+      box.appendChild(b);
+    });
+    $('back').disabled = (st.i === 0);
+    $('next').disabled = (st.ans[st.i] === null);
+    $('next').textContent = (st.i === N - 1) ? 'Go to writing' : 'Next';
+  }
+
+  function words(t){ t = (t || '').trim(); return t ? t.split(/\s+/).length : 0; }
+  function renderWrite(){
+    show('scr-write');
+    progress(N, 'Writing');
+    $('w-task').textContent = DATA.writing;
+    $('writing').value = st.writing || '';
+    $('w-count').textContent = words(st.writing);
+  }
+
+  function score(){
+    var r = {total:0, lv:{}, sk:{}, miss:[]};
+    LEVELS.forEach(function(l){ r.lv[l] = [0,0]; });
+    SKILLS.forEach(function(s){ r.sk[s] = [0,0]; });
+    Q.forEach(function(q, i){
+      var ok = st.ans[i] === q.a;
+      r.lv[q.l][1]++; r.sk[q.s][1]++;
+      if(ok){ r.total++; r.lv[q.l][0]++; r.sk[q.s][0]++; } else { r.miss.push(i); }
+    });
+    function pct(p){ return p[1] ? p[0] / p[1] : 0; }
+    // Ladder: a band counts as passed at 60% or more. The level is the first band not passed.
+    var band = 3;
+    if(pct(r.lv.A2) < 0.6) band = 0; else if(pct(r.lv.B1) < 0.6) band = 1; else if(pct(r.lv.B2) < 0.6) band = 2;
+    r.band = band;
+    return r;
+  }
+  function bars(el, keys, obj){
+    el.textContent = '';
+    keys.forEach(function(k){
+      var p = obj[k], row = document.createElement('div'); row.className = 'row';
+      var t = document.createElement('span'); t.className = 't'; t.textContent = k;
+      var m = document.createElement('span'); m.className = 'm';
+      var f = document.createElement('i'); f.style.width = Math.round(p[0] / p[1] * 100) + '%'; m.appendChild(f);
+      var v = document.createElement('span'); v.className = 'v'; v.textContent = p[0] + ' / ' + p[1];
+      row.appendChild(t); row.appendChild(m); row.appendChild(v); el.appendChild(row);
+    });
+  }
+  function summary(r){
+    var L = [];
+    L.push('English Level Check — ' + (st.name || 'no name'));
+    L.push('Score: ' + r.total + '/' + N + ' (' + Math.round(r.total / N * 100) + '%)');
+    L.push('Estimated level: ' + BANDS[r.band].name + ' (' + BANDS[r.band].code + ')');
+    L.push(LEVELS.map(function(l){ return l + ' ' + r.lv[l][0] + '/' + r.lv[l][1]; }).join(' · '));
+    L.push(SKILLS.map(function(s){ return s + ' ' + r.sk[s][0] + '/' + r.sk[s][1]; }).join(' · '));
+    L.push('');
+    L.push('Mistakes (' + r.miss.length + '):');
+    r.miss.forEach(function(i){
+      var q = Q[i], a = st.ans[i];
+      L.push('Q' + (i + 1) + ' [' + q.l + ', ' + q.t + '] chose "' + (a === null ? '—' : q.o[a]) + '", correct "' + q.o[q.a] + '"');
+    });
+    L.push('');
+    L.push('Writing (' + words(st.writing) + ' words):');
+    L.push(st.writing ? st.writing : '(not written)');
+    return L.join('\n');
+  }
+  function renderResult(){
+    var r = score();
+    show('scr-result');
+    $('bar').style.width = '100%'; $('count').textContent = 'Done';
+    $('r-n').textContent = r.total;
+    $('r-of').textContent = 'of ' + N + ' correct';
+    $('r-level').textContent = 'Estimated level: ' + BANDS[r.band].name;
+    $('r-note').textContent = NOTES[r.band];
+    var ruler = $('r-ruler'); ruler.textContent = '';
+    BANDS.forEach(function(b, k){
+      var d = document.createElement('div'); if(k === r.band) d.className = 'on';
+      var c = document.createElement('b'); c.textContent = b.code;
+      var n = document.createElement('span'); n.textContent = b.name;
+      d.appendChild(c); d.appendChild(n); ruler.appendChild(d);
+    });
+    bars($('r-levels'), LEVELS, r.lv);
+    bars($('r-skills'), SKILLS, r.sk);
+    var ul = $('r-miss'); ul.textContent = '';
+    $('m-title').textContent = r.miss.length ? 'Questions to review (' + r.miss.length + ')' : 'No mistakes. Excellent!';
+    r.miss.forEach(function(i){
+      var q = Q[i], a = st.ans[i], li = document.createElement('li');
+      var meta = document.createElement('span'); meta.className = 'meta'; meta.textContent = 'Q' + (i + 1) + ' · ' + q.l + ' · ' + q.t;
+      var t = document.createElement('span'); t.textContent = q.q;
+      var y = document.createElement('span'); y.className = 'yours'; y.textContent = 'Your answer: ' + (a === null ? '—' : q.o[a]);
+      var c = document.createElement('span'); c.className = 'right'; c.textContent = 'Correct: ' + q.o[q.a];
+      li.appendChild(meta); li.appendChild(t); li.appendChild(y); li.appendChild(c); ul.appendChild(li);
+    });
+    $('out').value = summary(r);
+    $('copied').hidden = true; $('out').hidden = true;
+  }
+
+  $('go').addEventListener('click', function(){
+    st.name = $('name').value.trim(); if(st.i < 0) st.i = 0; save(); renderQ();
+  });
+  $('back').addEventListener('click', function(){ if(st.i > 0){ st.i--; save(); renderQ(); } });
+  $('next').addEventListener('click', function(){
+    if(st.ans[st.i] === null) return;
+    if(st.i < N - 1){ st.i++; save(); renderQ(); } else { st.i = N; save(); renderWrite(); }
+  });
+  $('writing').addEventListener('input', function(e){ st.writing = e.target.value; $('w-count').textContent = words(st.writing); save(); });
+  $('w-back').addEventListener('click', function(){ st.i = N - 1; save(); renderQ(); });
+  $('finish').addEventListener('click', function(){ st.done = true; save(); renderResult(); });
+  $('copy').addEventListener('click', function(){
+    var out = $('out'), text = out.value;
+    function fallback(){ out.hidden = false; out.focus(); out.select(); $('copied').textContent = 'Select all the text below, copy it and paste it into the chat with Aziz.'; $('copied').hidden = false; }
+    function done(){ $('copied').textContent = 'Copied. Paste it into the chat with Aziz.'; $('copied').hidden = false; }
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done, fallback); }
+      else { fallback(); }
+    }catch(e){ fallback(); }
+  });
+  $('again').addEventListener('click', function(){
+    st = {i:-1, ans:new Array(N).fill(null), name:st.name, writing:'', done:false}; save(); start();
+  });
+
+  function start(){
+    $('name').value = st.name || '';
+    if(st.done){ renderResult(); }
+    else if(st.i >= N){ renderWrite(); }
+    else if(st.i >= 0){ renderQ(); }
+    else { show('scr-start'); progress(0, N + ' questions'); }
+  }
+  load(); start();
+})();
+</script>
+
+</html>
