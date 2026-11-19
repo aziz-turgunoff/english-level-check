@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>English Check 3</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Same booklet column as the first test. Typed answers, a countdown pill, a "not sure" toggle per answer. */
+:root{
+  --bg:#f3f5fa; --card:#ffffff; --fg:#141b2d; --muted:#5b6478; --line:#d6dbe8;
+  --accent:#2447d6; --accent-ink:#ffffff; --accent-soft:#e4e9fc;
+  --good:#12784a; --good-soft:#dff3e8; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1220; --card:#171d30; --fg:#eaeefb; --muted:#9aa4bd; --line:#2b3350;
+    --accent:#7d97ff; --accent-ink:#0b1022; --accent-soft:#222c52;
+    --good:#5fd39a; --good-soft:#143524; --bad:#ff8f86; --bad-soft:#40201e;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1220; --card:#171d30; --fg:#eaeefb; --muted:#9aa4bd; --line:#2b3350;
+  --accent:#7d97ff; --accent-ink:#0b1022; --accent-soft:#222c52;
+  --good:#5fd39a; --good-soft:#143524; --bad:#ff8f86; --bad-soft:#40201e;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:560px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:flex;flex-direction:column;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.timer{font-family:var(--display);font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;padding:4px 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.timer.late{background:var(--bad-soft);color:var(--bad)}
+.count{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s ease}
+h1{font-family:var(--display);font-size:30px;line-height:1.12;letter-spacing:-.02em;margin:8px 0 0;text-wrap:balance}
+h2{font-family:var(--display);font-size:20px;line-height:1.25;margin:0;text-wrap:balance}
+p{margin:0}
+.lead{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.facts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.facts li{display:flex;gap:12px;align-items:baseline}
+.facts b{font-family:var(--display);min-width:72px;font-size:15px}
+.tag{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.banner{background:var(--bad-soft);color:var(--bad);border-radius:12px;padding:10px 14px;font-size:14px;font-weight:500}
+.qtext{font-size:20px;line-height:1.45;font-weight:500}
+.orig{font-size:16px;line-height:1.5;background:var(--accent-soft);border-radius:12px;padding:12px 16px}
+.orig span{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.kw{align-self:flex-start;font-family:var(--display);font-weight:700;letter-spacing:.08em;background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:4px 12px}
+.nav{display:flex;gap:10px}
+.btn{font:inherit;font-weight:600;min-height:52px;padding:12px 18px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;flex:1}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{flex:0 0 auto;min-width:96px}
+.conf{display:flex;gap:8px}.conf .btn{min-height:48px;padding:10px 6px}
+.btn.toggle[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.btn:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+label{font-weight:600;font-size:14px}
+input[type=text],textarea{font:inherit;font-size:18px;color:var(--fg);background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;width:100%}
+textarea{min-height:190px;resize:vertical;line-height:1.5}
+textarea.ans{min-height:58px;height:58px;resize:none}
+textarea.ans.tall{min-height:110px;height:110px}
+.hint{font-size:14px;color:var(--muted)}
+.big{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.out{font-family:ui-monospace,Consolas,monospace;font-size:13px;min-height:150px}
+.ok{color:var(--good);font-weight:600;font-size:14px}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}}
+</style>
+
+<main class="wrap">
+  <div class="top"><span class="brand">English Check 3</span><span class="timer" id="timer" hidden></span></div>
+  <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+  <div class="count" id="count"></div>
+  <div class="banner" id="late" role="status" hidden>Time is up. Finish the answer you are on, then press Finish. Answers from now on are marked as late.</div>
+
+  <section id="scr-start" class="stack">
+    <span class="tag">Typed test · base skills · A2 to B2</span>
+    <h1>A different test: the basics</h1>
+    <p class="lead">This one is not like Check 2. It is about everyday grammar and words, the things we will work on together. It is a map, not an exam. Type every answer yourself. Don't use a dictionary, a translator or a chatbot.</p>
+    <div class="card">
+      <ul class="facts">
+        <li><b>24</b><span>short items: verbs, small words, words in use</span></li>
+        <li><b>1</b><span>short writing task, 60–80 words</span></li>
+        <li><b>25 min</b><span>on the clock. It does not stop if you close the page</span></li>
+        <li><b>Sure?</b><span>under every answer choose Sure, Not sure or Guess. Be honest, this helps me most</span></li>
+      </ul>
+    </div>
+    <div class="stack" style="gap:6px">
+      <label for="name">Your name</label>
+      <input type="text" id="name" autocomplete="given-name" placeholder="Your name">
+    </div>
+    <p class="hint">Другой тест, не такой, как второй. Тут основы: времена, предлоги, слова. Это не экзамен, а карта, чтобы я знал, с чего начать. Печатай сама, без словаря и переводчика. Под каждым ответом выбери Sure / Not sure / Guess. Не знаешь — жми Skip. В конце нажми «Copy my result» и отправь результат Азизу.</p>
+    <div class="nav"><button class="btn primary" id="go" type="button">Start the clock</button></div>
+  </section>
+
+  <section id="scr-q" class="stack" hidden>
+    <span class="tag" id="q-tag"></span>
+    <p class="hint" id="q-inst"></p>
+    <div class="orig" id="q-orig" hidden></div>
+    <p class="qtext" id="q-text"></p>
+    <span class="kw" id="q-kw" hidden></span>
+    <div class="stack" style="gap:6px">
+      <label for="ans" id="q-label">Your answer</label>
+      <textarea class="ans" id="ans" rows="1" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"></textarea>
+    </div>
+    <div class="conf" id="conf" role="group" aria-label="How sure are you?">
+      <button class="btn toggle" type="button" data-c="s" aria-pressed="false">Sure</button>
+      <button class="btn toggle" type="button" data-c="n" aria-pressed="false">Not sure</button>
+      <button class="btn toggle" type="button" data-c="g" aria-pressed="false">Guess</button>
+    </div>
+    <p class="hint" id="conf-hint" hidden>Choose how sure you are, then go on.</p>
+    <div class="nav">
+      <button class="btn small" id="back" type="button">Back</button>
+      <button class="btn primary" id="next" type="button">Skip</button>
+    </div>
+  </section>
+
+  <section id="scr-write" class="stack" hidden>
+    <span class="tag">Writing</span>
+    <h2 id="w-task"></h2>
+    <textarea id="writing" placeholder="Start writing here…" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false"></textarea>
+    <p class="hint"><span id="w-count">0</span> words. Aziz reads this part himself, so it is not scored here.</p>
+    <div class="nav">
+      <button class="btn small" id="w-back" type="button">Back</button>
+      <button class="btn primary" id="finish" type="button">Finish</button>
+    </div>
+  </section>
+
+  <section id="scr-result" class="stack" hidden>
+    <span class="tag">Finished</span>
+    <div class="big" id="r-time"></div>
+    <h2 id="r-line"></h2>
+    <p class="lead">No score here on purpose. Aziz will go through your answers with you at the lesson. This test is a map, not a grade.</p>
+    <div class="card stack">
+      <h2>Send your result to Aziz</h2>
+      <p class="hint">Tap the button, then paste the text into Telegram.</p>
+      <div class="nav"><button class="btn primary" id="copy" type="button">Copy my result</button></div>
+      <p class="ok" id="copied" hidden>Copied. Paste it into the chat with Aziz.</p>
+      <textarea class="out" id="out" readonly hidden></textarea>
+    </div>
+    <div class="card stack">
+      <h2>One more thing (optional)</h2>
+      <p id="r-voice"></p>
+    </div>
+    <div class="nav"><button class="btn" id="again" type="button">Start again</button></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var DATA = {"title": "English Check 3 (typed, base skills)", "limit": 25, "parts": [{"name": "Verbs", "short": "Verbs", "inst": "Write the correct form of the verb in brackets. It can be one word or more than one word."}, {"name": "Small words", "short": "Small words", "inst": "Type ONE word that fits the gap."}, {"name": "Words in use", "short": "Words in use", "inst": "Type the missing word. The first letter is given."}], "writing": "Describe a day when you were very busy. What were you doing, and how did you feel? Write 60–80 words.", "voice": "Optional, about 1 minute: record a Telegram voice message for Aziz. Tell him what you usually do at the weekend, and what you are doing today.", "questions": [{"p": 0, "l": "A2", "t": "Present continuous", "q": "Look! The children ____ (play) in the garden."}, {"p": 0, "l": "B1", "t": "Present simple vs continuous", "q": "My sister usually drinks tea, but today she ____ (drink) coffee."}, {"p": 0, "l": "B1", "t": "Present perfect with since", "q": "I ____ (live) in Tashkent since 2015."}, {"p": 0, "l": "B1", "t": "Past continuous", "q": "When I arrived, they ____ (have) dinner."}, {"p": 0, "l": "B1", "t": "Preposition + -ing", "q": "He is very interested in ____ (learn) about history."}, {"p": 0, "l": "B1", "t": "First conditional", "q": "If it rains tomorrow, we ____ (stay) at home."}, {"p": 0, "l": "B2", "t": "be used to + -ing", "q": "I'm not used to ____ (drive) on the left."}, {"p": 0, "l": "B2", "t": "Second conditional", "q": "If I ____ (have) more money, I would buy a bigger flat."}, {"p": 0, "l": "B2", "t": "Wish about the past", "q": "I wish I ____ (know) the answer yesterday."}, {"p": 0, "l": "B2", "t": "Reported speech", "q": "She said that she ____ (finish) the report the day before."}, {"p": 1, "l": "A2", "t": "Time prepositions", "q": "I get up ____ seven o'clock every morning."}, {"p": 1, "l": "A2", "t": "Time prepositions", "q": "My birthday is ____ March."}, {"p": 1, "l": "B1", "t": "Time prepositions", "q": "We usually go to the countryside ____ weekends."}, {"p": 1, "l": "B1", "t": "Much / many", "q": "There isn't ____ traffic today, so we can drive fast."}, {"p": 1, "l": "B1", "t": "Adjective + preposition", "q": "She's very good ____ solving problems."}, {"p": 1, "l": "B1", "t": "Adjective + preposition", "q": "I'm afraid ____ spiders."}, {"p": 1, "l": "B2", "t": "Verb + preposition", "q": "The teacher explained ____ us how the exercise worked."}, {"p": 1, "l": "B2", "t": "Adjective + preposition", "q": "She is responsible ____ the whole project."}, {"p": 1, "l": "B2", "t": "Verb + preposition", "q": "He apologised ____ being late."}, {"p": 2, "l": "B1", "t": "Money verbs", "q": "I'm trying to save money, so I don't s____ much on clothes."}, {"p": 2, "l": "B1", "t": "Lend / borrow", "q": "Can you l____ me your pen for a moment? I forgot mine."}, {"p": 2, "l": "B1", "t": "-ing / -ed adjectives", "q": "The film was so b____ that I nearly fell asleep."}, {"p": 2, "l": "B1", "t": "Make / do", "q": "I need to m____ a decision before Friday."}, {"p": 2, "l": "B2", "t": "Phrasal verb", "q": "The company decided to c____ out a survey among its customers."}]};
+  var Q = DATA.questions, N = Q.length, KEY = 'elc3-v1', LIMIT = DATA.limit * 60;
+  var PARTS = DATA.parts;
+  var st;
+
+  var CNAME = {s:'sure', n:'not sure', g:'guess'};
+  function fresh(name){
+    var a = []; for(var k = 0; k < N; k++){ a.push({v:null, c:null, t:null}); }
+    return {i:-1, ans:a, name:name || '', writing:'', wt:null, startedAt:null, endedAt:null, done:false};
+  }
+  st = fresh('');
+
+  function $(id){ return document.getElementById(id); }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} }
+  function load(){
+    try{
+      var s = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if(s && s.ans && s.ans.length === N){ st = s; }
+    }catch(e){}
+  }
+  function show(id){
+    ['scr-start','scr-q','scr-write','scr-result'].forEach(function(x){ $(x).hidden = (x !== id); });
+    window.scrollTo(0,0);
+  }
+  function progress(done, label){
+    $('bar').style.width = Math.round(done / (N + 1) * 100) + '%';
+    $('count').textContent = label;
+  }
+  function elapsed(){
+    if(!st.startedAt) return 0;
+    var end = st.endedAt || Date.now();
+    return Math.max(0, Math.floor((end - st.startedAt) / 1000));
+  }
+  function mmss(s){ var m = Math.floor(s / 60), r = s % 60; return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r; }
+
+  function tick(){
+    var el = $('timer');
+    if(!st.startedAt){ el.hidden = true; $('late').hidden = true; return; }
+    el.hidden = false;
+    var left = LIMIT - elapsed();
+    if(left >= 0){
+      el.textContent = mmss(left); el.classList.remove('late'); $('late').hidden = true;
+    } else {
+      el.textContent = '+' + mmss(-left); el.classList.add('late'); $('late').hidden = st.done;
+    }
+  }
+
+  function typed(i){
+    var v = st.ans[i].v;
+    return v === null ? '' : v.trim();
+  }
+  function curVal(){ var a = st.ans[st.i]; return a.v !== null ? a.v : ''; }
+  function needConf(){ return !!typed(st.i) && st.ans[st.i].c === null; }
+  function nextLabel(){ return typed(st.i) ? (st.i === N - 1 ? 'Go to writing' : 'Next') : (st.i === N - 1 ? 'Skip, go to writing' : 'Skip'); }
+  function paintConf(){
+    var c = st.ans[st.i].c;
+    Array.prototype.forEach.call($('conf').children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-c') === c ? 'true' : 'false'); });
+    $('conf-hint').hidden = !needConf();
+    $('next').disabled = needConf();
+    $('next').textContent = nextLabel();
+  }
+
+  function renderQ(){
+    var q = Q[st.i], part = PARTS[q.p];
+    show('scr-q');
+    progress(st.i, 'Item ' + (st.i + 1) + ' of ' + N);
+    $('q-tag').textContent = 'Part ' + (q.p + 1) + ' · ' + part.name;
+    $('q-inst').textContent = part.inst;
+    $('q-text').textContent = q.q;
+    $('q-label').textContent = 'Your answer';
+    var ta = $('ans');
+    ta.className = 'ans';
+    ta.value = curVal();
+    $('back').disabled = (st.i === 0);
+    paintConf();
+    if(window.matchMedia && !window.matchMedia('(pointer: coarse)').matches){ ta.focus(); }
+  }
+
+  function words(t){ t = (t || '').trim(); return t ? t.split(/\s+/).length : 0; }
+  function renderWrite(){
+    show('scr-write');
+    progress(N, 'Writing');
+    $('w-task').textContent = DATA.writing;
+    $('writing').value = st.writing || '';
+    $('w-count').textContent = words(st.writing);
+  }
+
+  function counts(){
+    var r = {answered:0, blank:0, s:0, n:0, g:0, late:0};
+    Q.forEach(function(q, i){
+      var a = st.ans[i];
+      if(typed(i)){ r.answered++; if(a.c){ r[a.c]++; } } else { r.blank++; }
+      if(a.t !== null && a.t > LIMIT) r.late++;
+    });
+    return r;
+  }
+
+  // No score and no answer key in this page. Aziz checks the pasted text.
+  function summary(){
+    var r = counts(), L = [], used = elapsed();
+    var d = new Date(st.endedAt || Date.now());
+    function p2(n){ return (n < 10 ? '0' : '') + n; }
+    L.push('English Check 3 (typed, base skills) — ' + (st.name || 'no name'));
+    L.push('Date: ' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()));
+    L.push('Time used: ' + mmss(used) + ' (limit ' + mmss(LIMIT) + (used > LIMIT ? ', over by ' + mmss(used - LIMIT) : '') + ')');
+    L.push('Answered ' + r.answered + '/' + N + ' · blank ' + r.blank + ' · sure ' + r.s + ' · not sure ' + r.n + ' · guess ' + r.g + ' · typed after time ' + r.late);
+    L.push('');
+    L.push('Answers (item [level, part] "typed" · sure/not sure/guess · minute:second of last edit):');
+    Q.forEach(function(q, i){
+      var a = st.ans[i], t = typed(i);
+      var line = (i + 1) + ' [' + q.l + ', ' + PARTS[q.p].short + '] ' + (t ? JSON.stringify(t) : '(blank)');
+      line += ' · ' + (t && a.c ? CNAME[a.c] : '-');
+      if(a.t !== null){ line += ' · ' + mmss(a.t) + (a.t > LIMIT ? ' LATE' : ''); }
+      L.push(line);
+    });
+    L.push('');
+    L.push('Writing (' + words(st.writing) + ' words' + (st.wt !== null ? ', last edit ' + mmss(st.wt) + (st.wt > LIMIT ? ' LATE' : '') : '') + '):');
+    L.push(st.writing ? st.writing : '(not written)');
+    return L.join('\n');
+  }
+
+  function renderResult(){
+    var r = counts(), used = elapsed();
+    show('scr-result');
+    tick();
+    $('bar').style.width = '100%'; $('count').textContent = 'Done';
+    $('r-time').textContent = mmss(used);
+    $('r-line').textContent = 'Time used. Answered ' + r.answered + ' of ' + N + '.';
+    $('r-voice').textContent = DATA.voice;
+    $('out').value = summary();
+    $('copied').hidden = true; $('out').hidden = true;
+  }
+
+  function goNext(){
+    if(st.i < N - 1){ st.i++; save(); renderQ(); } else { st.i = N; save(); renderWrite(); }
+  }
+
+  $('go').addEventListener('click', function(){
+    st.name = $('name').value.trim();
+    if(!st.startedAt){ st.startedAt = Date.now(); }
+    if(st.i < 0) st.i = 0;
+    save(); tick(); renderQ();
+  });
+  $('ans').addEventListener('input', function(e){
+    var a = st.ans[st.i]; a.v = e.target.value; a.t = elapsed(); save(); paintConf();
+  });
+  $('ans').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); if(!needConf()) goNext(); }
+  });
+  Array.prototype.forEach.call($('conf').children, function(b){
+    b.addEventListener('click', function(){
+      var a = st.ans[st.i], c = b.getAttribute('data-c');
+      a.c = (a.c === c) ? null : c; if(a.t === null) a.t = elapsed(); save(); paintConf();
+    });
+  });
+  $('back').addEventListener('click', function(){ if(st.i > 0){ st.i--; save(); renderQ(); } });
+  $('next').addEventListener('click', function(){ if(!needConf()) goNext(); });
+  $('writing').addEventListener('input', function(e){
+    st.writing = e.target.value; st.wt = elapsed(); $('w-count').textContent = words(st.writing); save();
+  });
+  $('w-back').addEventListener('click', function(){ st.i = N - 1; save(); renderQ(); });
+  $('finish').addEventListener('click', function(){
+    st.done = true; st.endedAt = Date.now(); save(); renderResult();
+  });
+  $('copy').addEventListener('click', function(){
+    var out = $('out'), text = out.value;
+    function fallback(){ out.hidden = false; out.focus(); out.select(); $('copied').textContent = 'Select all the text below, copy it and paste it into the chat with Aziz.'; $('copied').hidden = false; }
+    function done(){ $('copied').textContent = 'Copied. Paste it into the chat with Aziz.'; $('copied').hidden = false; }
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done, fallback); }
+      else { fallback(); }
+    }catch(e){ fallback(); }
+  });
+  $('again').addEventListener('click', function(){
+    if(!window.confirm('Start again? Your answers and the clock will be reset.')) return;
+    st = fresh(st.name); save(); start();
+  });
+
+  function start(){
+    $('name').value = st.name || '';
+    tick();
+    if(st.done){ renderResult(); }
+    else if(st.i >= N){ renderWrite(); }
+    else if(st.i >= 0){ renderQ(); }
+    else { show('scr-start'); progress(0, N + ' items + writing'); }
+  }
+  load(); start();
+  setInterval(tick, 500);
+})();
+</script>
+
+</html>
